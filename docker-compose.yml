@@ -15,28 +15,7 @@ services:
       DB_NAME: cvgen
       DB_USER: cvgen_user
       DB_PASS: cvgen_password
-      FLASK_API_URL: http://flask-api:5000
-    depends_on:
-      - db
-      - flask-api
-
-  flask-api:
-    build:
-      context: .
-      dockerfile: docker/flask/Dockerfile
-    container_name: cvgen_flask
-    ports:
-      - "5001:5000"
-    volumes:
-      - ./src/flask:/app
-    environment:
-      FLASK_ENV: development
-      FLASK_DEBUG: 1
       GEMINI_API_KEY: ${GEMINI_API_KEY}
-      DB_HOST: db
-      DB_NAME: cvgen
-      DB_USER: cvgen_user
-      DB_PASS: cvgen_password
     depends_on:
       - db
 
