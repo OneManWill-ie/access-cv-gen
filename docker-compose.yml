@@ -1,0 +1,72 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: cvgen_app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src/php:/var/www/html
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini:ro
+    environment:
+      APP_ENV: development
+      DB_HOST: db
+      DB_NAME: cvgen
+      DB_USER: cvgen_user
+      DB_PASS: cvgen_password
+      FLASK_API_URL: http://flask-api:5000
+    depends_on:
+      - db
+      - flask-api
+
+  flask-api:
+    build:
+      context: .
+      dockerfile: docker/flask/Dockerfile
+    container_name: cvgen_flask
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./src/flask:/app
+    environment:
+      FLASK_ENV: development
+      FLASK_DEBUG: 1
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      DB_HOST: db
+      DB_NAME: cvgen
+      DB_USER: cvgen_user
+      DB_PASS: cvgen_password
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.4
+    container_name: cvgen_db
+    environment:
+      MYSQL_DATABASE: cvgen
+      MYSQL_USER: cvgen_user
+      MYSQL_PASSWORD: cvgen_password
+      MYSQL_ROOT_PASSWORD: root_password_change_me
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: cvgen_pma
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: cvgen_user
+      PMA_PASSWORD: cvgen_password
+      UPLOAD_LIMIT: 64M
+    depends_on:
+      - db
+
+volumes:
+  db_data:
