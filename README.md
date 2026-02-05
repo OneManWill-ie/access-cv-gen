@@ -29,13 +29,7 @@ Create a `.env` file in the root directory:
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-### 3. Create Directory Structure
-Ensure you have the required directories:
-```bash
-mkdir -p src/php src/flask docker/php docker/flask docker/db
-```
-
-### 4. Build and Start Containers
+### 3. Build and Start Containers
 ```bash
 docker-compose up -d --build
 ```
@@ -46,12 +40,12 @@ This will:
 - Start MySQL database
 - Start PHPMyAdmin on `http://localhost:8081`
 
-### 5. Access the Services
+### 4. Access the Services
 
 | Service | URL | Credentials |
 |---------|-----|-------------|
 | CV Generator (PHP) | http://localhost:8080 | - |
-| Flask API | http://localhost:5000 | - |
+| Flask API | http://localhost:5001 | - |
 | PHPMyAdmin | http://localhost:8081 | Username: `cvgen_user`, Password: `cvgen_password` |
 | Database | localhost:3306 | User: `cvgen_user`, Password: `cvgen_password` |
 
@@ -102,31 +96,3 @@ docker-compose exec flask-api bash
 # Database container
 docker-compose exec db bash
 ```
-
-## Development Notes
-
-- **PHP Frontend**: Place your Bootstrap-based UI files in `src/php/`
-- **Flask API**: Place your Python files in `src/flask/`. The API will handle Gemini API calls
-- **Database**: Initial SQL scripts go in `docker/db/init.sql`
-- **API Communication**: Flask API runs on port 5000, accessible from PHP at `http://flask-api:5000`
-
-## Troubleshooting
-
-### Containers won't start
-- Check Docker Desktop is running
-- Verify `.env` file has valid `GEMINI_API_KEY`
-- Run `docker-compose logs` to see error messages
-
-### Database connection issues
-- Ensure MySQL container is running: `docker-compose ps`
-- Check database credentials match in `docker-compose.yml`
-- Wait a few seconds for MySQL to initialize on first startup
-
-### Port conflicts
-- If ports 8080, 5000, 3306, or 8081 are in use, modify the port mappings in `docker-compose.yml`
-
-## Notes
-
-- Change `MYSQL_ROOT_PASSWORD` to a secure password
-- Keep your `.env` file secure and don't commit it to version control
-- Add `.env` to `.gitignore`
